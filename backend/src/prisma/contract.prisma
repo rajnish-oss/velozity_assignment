@@ -11,6 +11,7 @@ enum TaskStatus {
   IN_PROGRESS
   IN_REVIEW
   DONE
+  OVERDUE
 }
 
 enum TaskPriority {

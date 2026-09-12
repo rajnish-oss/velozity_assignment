@@ -166,9 +166,9 @@ Socket.IO was chosen because it provides authenticated connections, named events
 
 Task status changes are persisted before being emitted. On connection, the server sends a bounded, role-filtered activity catch-up payload so a client can recover recent events after disconnecting.
 
-### Job queue
+### Scheduled overdue-task processing
 
-No job queue is used. The assignment only requires request/response operations, persisted activity, notifications, and real-time delivery. Adding Redis/BullMQ would introduce another operational dependency without a current asynchronous workload. A queue would be appropriate later for email, push notifications, exports, or scheduled cleanup.
+The backend uses `node-cron` to scan for tasks whose due date has passed every minute. Non-completed tasks are marked `OVERDUE`, and assigned developers receive a persisted notification the first time each task is marked overdue. The initial scan also runs during backend startup.
 
 ### Token storage
 

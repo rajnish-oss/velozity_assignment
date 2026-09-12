@@ -43,8 +43,8 @@ export default function PMDashboard() {
         <MetricCard label="Open tasks" value={myTasks.filter((t) => t.status !== 'DONE').length} />
         <MetricCard
           label="Overdue"
-          value={myTasks.filter((t) => isOverdue(t.dueDate, t.status)).length}
-          tone={myTasks.some((t) => isOverdue(t.dueDate, t.status)) ? 'alert' : 'default'}
+          value={myTasks.filter((t) => t.status === 'OVERDUE').length}
+          tone={myTasks.some((t) => t.status === 'OVERDUE') ? 'alert' : 'default'}
         />
       </div>
 
@@ -70,7 +70,7 @@ export default function PMDashboard() {
               {upcoming.map((t) => (
                 <li key={t.id} className="flex items-center justify-between gap-2">
                   <span className="truncate text-sm text-ink-800">{t.title}</span>
-                  <span className={`shrink-0 text-xs font-medium ${isOverdue(t.dueDate, t.status) ? 'text-rose-600' : 'text-ink-500'}`}>
+                  <span className={`shrink-0 text-xs font-medium ${isOverdue(t.status) ? 'text-rose-600' : 'text-ink-500'}`}>
                     {formatDueDate(t.dueDate)}
                   </span>
                 </li>

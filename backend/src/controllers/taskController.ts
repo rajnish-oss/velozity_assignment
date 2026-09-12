@@ -5,7 +5,7 @@ import { emitTaskStatusChanged } from '../sockets/socket';
 import { Temporal } from '@js-temporal/polyfill';
 import { getAuthenticatedUser, type AuthenticatedUser, type UserRole } from '../middlerware/authMiddleware';
 
-type TaskStatus = 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE';
+type TaskStatus = 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE' | 'OVERDUE';
 type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
 const TASK_STATUSES: TaskStatus[] = [
@@ -13,6 +13,7 @@ const TASK_STATUSES: TaskStatus[] = [
   'IN_PROGRESS',
   'IN_REVIEW',
   'DONE',
+  'OVERDUE',
 ];
 
 const TASK_PRIORITIES: TaskPriority[] = [

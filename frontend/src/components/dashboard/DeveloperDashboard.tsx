@@ -47,7 +47,7 @@ export default function DeveloperDashboard() {
                     <PriorityBadge priority={task.priority} />
                     <StatusPill status={task.status} />
                     <span className="text-xs text-ink-500">Due {formatDueDate(task.dueDate)}</span>
-                    {isOverdue(task.dueDate, task.status) && <OverdueBadge />}
+                    {isOverdue(task.status) && <OverdueBadge />}
                   </div>
                 </button>
                 {task.status !== 'DONE' && (

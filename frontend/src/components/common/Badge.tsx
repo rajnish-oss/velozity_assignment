@@ -19,11 +19,13 @@ export function PriorityBadge({ priority }) {
 export function StatusPill({ status }) {
   const styles = {
     TODO: 'bg-stone-100 text-stone-700',
+    TO_DO: 'bg-stone-100 text-stone-700',
     IN_PROGRESS: 'bg-sky-100 text-sky-700',
     IN_REVIEW: 'bg-amber-100 text-amber-700',
     DONE: 'bg-emerald-100 text-emerald-700',
+    OVERDUE: 'bg-rose-100 text-rose-700',
   }
-  const labels = { TODO: 'To Do', IN_PROGRESS: 'In Progress', IN_REVIEW: 'In Review', DONE: 'Done' }
+  const labels = { TODO: 'To Do', TO_DO: 'To Do', IN_PROGRESS: 'In Progress', IN_REVIEW: 'In Review', DONE: 'Done', OVERDUE: 'Overdue' }
   return (
     <span className={clsx('inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium', styles[status])}>
       {labels[status]}

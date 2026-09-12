@@ -1,7 +1,6 @@
 import { useAppSelector } from '../../app/hooks'
 import MetricCard from './MetricCard'
 import ActivityFeed from '../activity/ActivityFeed'
-import { isOverdue } from '../../utils/time'
 import { STATUS_ORDER, STATUS_LABELS } from '../../utils/constants'
 
 export default function AdminDashboard() {
@@ -9,7 +8,7 @@ export default function AdminDashboard() {
   const tasks = useAppSelector((s) => s.tasks.items)
   const onlineCount = useAppSelector((s) => s.presence.onlineCount)
 
-  const overdueCount = tasks.filter((t) => isOverdue(t.dueDate, t.status)).length
+  const overdueCount = tasks.filter((t) => t.status === 'OVERDUE').length
   const statusBreakdown = STATUS_ORDER.map((status) => ({
     status,
     count: tasks.filter((t) => t.status === status).length,

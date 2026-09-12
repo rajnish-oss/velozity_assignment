@@ -1,6 +1,5 @@
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
-import { Temporal } from '@js-temporal/polyfill';
 import { getAuthenticatedUser } from '../middlerware/authMiddleware';
 
 
@@ -23,8 +22,7 @@ export async function dashboardMetrics(req: Request, res: Response) {
       projects = projectIds.length ? await db.orm.public.Project.where((project) => project.id.in(projectIds)).all() : [];
     }
 
-    const now = Temporal.Now.instant();
-    const overdueTasks = tasks.filter((task) => task.status !== 'DONE' && Temporal.Instant.compare(task.dueDate, now) < 0);
+    const overdueTasks = tasks.filter((task) => task.status === 'OVERDUE');
     const completedTasks = tasks.filter((task) => task.status === 'DONE');
     return res.status(200).json({
       metrics: {

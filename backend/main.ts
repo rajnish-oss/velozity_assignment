@@ -15,6 +15,7 @@ import { Server } from'socket.io';
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken';
 import { handleSocketConnection } from './src/sockets/socket';
+import { markOverdueTasks, startOverdueTaskScheduler } from './src/jobs/overdueTaskJob';
 
 const app = express();
 const port = Number(process.env['PORT'] ?? 8000);
@@ -61,6 +62,8 @@ async function start() {
   }
 
   await db.connect({ url: process.env['DATABASE_URL'] });
+  await markOverdueTasks();
+  startOverdueTaskScheduler();
 
   server.listen(port, () => {
     console.log(`Server running on port ${port}`);

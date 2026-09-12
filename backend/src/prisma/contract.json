@@ -89,6 +89,10 @@
               {
                 "name": "DONE",
                 "value": "DONE"
+              },
+              {
+                "name": "OVERDUE",
+                "value": "OVERDUE"
               }
             ]
           }
@@ -1101,8 +1105,8 @@
                   "prefix": "task_priority_check"
                 },
                 {
-                  "expression": "\"status\" IN ('TO_DO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE')",
-                  "name": "task_status_check_719e0a3f",
+                  "expression": "\"status\" IN ('TO_DO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE', 'OVERDUE')",
+                  "name": "task_status_check_e4ddf9b1",
                   "prefix": "task_status_check"
                 }
               ],
@@ -1338,7 +1342,8 @@
                 "TO_DO",
                 "IN_PROGRESS",
                 "IN_REVIEW",
-                "DONE"
+                "DONE",
+                "OVERDUE"
               ]
             }
           }
@@ -1347,7 +1352,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "5499553a34a2f86693b31a613ea2dfe834961b1022bc117d651f673ec2cc80de"
+    "storageHash": "c27faef96728cc551b17044f6d373d6595ebe253ab990ee0dcef85d6153af0e9"
   },
   "execution": {
     "executionHash": "847e0bd7cff7185adc2fbccf4627c684c27c3698be7f26c966e7ac6aa0f53001",

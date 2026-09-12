@@ -33,7 +33,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'5499553a34a2f86693b31a613ea2dfe834961b1022bc117d651f673ec2cc80de'>;
+  StorageHashBase<'c27faef96728cc551b17044f6d373d6595ebe253ab990ee0dcef85d6153af0e9'>;
 export type ExecutionHash =
   ExecutionHashBase<'847e0bd7cff7185adc2fbccf4627c684c27c3698be7f26c966e7ac6aa0f53001'>;
 export type ProfileHash =
@@ -275,7 +275,7 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly title: CodecTypes['pg/text@1']['output'];
       readonly description: CodecTypes['pg/text@1']['output'] | null;
-      readonly status: 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE';
+      readonly status: 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE' | 'OVERDUE';
       readonly priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
       readonly dueDate: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly projectId: CodecTypes['pg/text@1']['output'];
@@ -327,7 +327,7 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly title: CodecTypes['pg/text@1']['input'];
       readonly description: CodecTypes['pg/text@1']['input'] | null;
-      readonly status: 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE';
+      readonly status: 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE' | 'OVERDUE';
       readonly priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
       readonly dueDate: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly projectId: CodecTypes['pg/text@1']['input'];
@@ -382,7 +382,7 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/text@1']['output'];
       readonly priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
       readonly projectId: CodecTypes['pg/text@1']['output'];
-      readonly status: 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE';
+      readonly status: 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE' | 'OVERDUE';
       readonly title: CodecTypes['pg/text@1']['output'];
     };
     readonly user: {
@@ -434,7 +434,7 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/text@1']['input'];
       readonly priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
       readonly projectId: CodecTypes['pg/text@1']['input'];
-      readonly status: 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE';
+      readonly status: 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE' | 'OVERDUE';
       readonly title: CodecTypes['pg/text@1']['input'];
     };
     readonly user: {
@@ -886,7 +886,7 @@ type ContractBase = Omit<
             };
             readonly TaskStatus: {
               readonly kind: 'valueSet';
-              readonly values: readonly ['TO_DO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE'];
+              readonly values: readonly ['TO_DO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE', 'OVERDUE'];
             };
           };
         };
@@ -1339,6 +1339,7 @@ type ContractBase = Omit<
               { readonly name: 'IN_PROGRESS'; readonly value: 'IN_PROGRESS' },
               { readonly name: 'IN_REVIEW'; readonly value: 'IN_REVIEW' },
               { readonly name: 'DONE'; readonly value: 'DONE' },
+              { readonly name: 'OVERDUE'; readonly value: 'OVERDUE' },
             ];
           };
           readonly TaskPriority: {

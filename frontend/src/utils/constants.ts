@@ -12,12 +12,14 @@ export const ROLE_LABELS = {
 
 export const STATUS_LABELS = {
   TODO: 'To Do',
+  TO_DO: 'To Do',
   IN_PROGRESS: 'In Progress',
   IN_REVIEW: 'In Review',
   DONE: 'Done',
+  OVERDUE: 'Overdue',
 }
 
-export const STATUS_ORDER = ['TODO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE']
+export const STATUS_ORDER = ['TO_DO', 'IN_PROGRESS', 'IN_REVIEW', 'DONE', 'OVERDUE']
 
 export const PRIORITY_ORDER = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
 
@@ -30,9 +32,11 @@ export const PRIORITY_STYLES = {
 
 export const STATUS_STYLES = {
   TODO: 'bg-stone-100 text-stone-700',
+  TO_DO: 'bg-stone-100 text-stone-700',
   IN_PROGRESS: 'bg-sky-100 text-sky-700',
   IN_REVIEW: 'bg-amber-100 text-amber-700',
   DONE: 'bg-emerald-100 text-emerald-700',
+  OVERDUE: 'bg-rose-100 text-rose-700',
 }
 
 // @ts-nocheck

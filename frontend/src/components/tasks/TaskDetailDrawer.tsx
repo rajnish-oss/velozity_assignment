@@ -33,7 +33,7 @@ export default function TaskDetailDrawer({ taskId, onClose }) {
           <div className="flex flex-wrap items-center gap-2">
             <PriorityBadge priority={task.priority} />
             <StatusPill status={task.status} />
-            {isOverdue(task.dueDate, task.status) && <OverdueBadge />}
+            {isOverdue(task.status) && <OverdueBadge />}
           </div>
 
           <div>

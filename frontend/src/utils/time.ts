@@ -16,9 +16,8 @@ export function formatDueDate(iso) {
   return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
 }
 
-export function isOverdue(iso, status) {
-  if (status === 'DONE') return false
-  return new Date(iso).getTime() < Date.now()
+export function isOverdue(status) {
+  return status === 'OVERDUE'
 }
 
 // @ts-nocheck

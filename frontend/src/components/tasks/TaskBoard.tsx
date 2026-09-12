@@ -28,7 +28,7 @@ export default function TaskBoard() {
     const dueF = params.get('due')
     if (statusF && t.status !== statusF) return false
     if (priorityF && t.priority !== priorityF) return false
-    if (dueF === 'overdue' && !isOverdue(t.dueDate, t.status)) return false
+    if (dueF === 'overdue' && !isOverdue(t.status)) return false
     if (dueF === '7d' && new Date(t.dueDate) - Date.now() > 7 * 86400000) return false
     if (dueF === '30d' && new Date(t.dueDate) - Date.now() > 30 * 86400000) return false
     return true
@@ -86,7 +86,7 @@ export default function TaskBoard() {
                         <p className="text-sm font-medium text-ink-900">{task.title}</p>
                         <div className="mt-2 flex flex-wrap items-center gap-1.5">
                           <PriorityBadge priority={task.priority} />
-                          {isOverdue(task.dueDate, task.status) && <OverdueBadge />}
+                          {isOverdue(task.status) && <OverdueBadge />}
                         </div>
                         <div className="mt-2.5 flex items-center justify-between">
                           <Avatar userId={task.assigneeId} size="sm" />

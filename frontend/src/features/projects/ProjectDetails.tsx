@@ -115,7 +115,7 @@ export default function ProjectDetails() {
                     <PriorityBadge priority={task.priority} />
                     <StatusPill status={task.status} />
                     <span className="w-16 shrink-0 text-right text-xs text-ink-500">{formatDueDate(task.dueDate)}</span>
-                    {isOverdue(task.dueDate, task.status) && <OverdueBadge />}
+                    {isOverdue(task.status) && <OverdueBadge />}
                   </button>
                 </li>
               ))}
