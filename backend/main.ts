@@ -10,9 +10,8 @@ import activityRouter from './src/routes/activityRoutes';
 import notificationRouter from './src/routes/notificationRoutes';
 import dashboardRouter from './src/routes/dashboardRoutes';
 import userRouter from './src/routes/userRoutes';
-import http  from'http';
-import { Server } from'socket.io';
-import bcrypt from 'bcrypt'
+import http from 'http';
+import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import { handleSocketConnection } from './src/sockets/socket';
 import { markOverdueTasks, startOverdueTaskScheduler } from './src/jobs/overdueTaskJob';
@@ -46,7 +45,15 @@ io.use((socket, next) => {
 
   try {
     const payload = jwt.verify(token, secret);
-    if (typeof payload === 'string' || typeof payload.sub !== 'string' || (payload.role !== 'ADMIN' && payload.role !== 'PROJECT_MANAGER' && payload.role !== 'DEVELOPER')) return next(new Error('Unauthorized'));
+    if (
+      typeof payload === 'string' ||
+      typeof payload.sub !== 'string' ||
+      (payload.role !== 'ADMIN' &&
+        payload.role !== 'PROJECT_MANAGER' &&
+        payload.role !== 'DEVELOPER')
+    ) {
+      return next(new Error('Unauthorized'));
+    }
     socket.data.user = { id: payload.sub, role: payload.role };
     next();
   } catch {

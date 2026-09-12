@@ -26,5 +26,3 @@ export default function ConfirmDialog({ open, onClose, onConfirm, title, descrip
     </Modal>
   )
 }
-
-// @ts-nocheck
