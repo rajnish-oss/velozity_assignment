@@ -3,10 +3,12 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "scripts": {
-    "dev": "tsx watch main.ts",
-    "contract:emit": "prisma contract emit"
-  },
+"scripts": {
+  "dev": "tsx watch main.ts",
+  "build": "tsc",
+  "start": "node dist/main.js",
+  "contract:emit": "prisma contract emit"
+},
   "dependencies": {
     "@js-temporal/polyfill": "^0.5.1",
     "@prisma/orm-postgres": "^8.0.0-rc.9",
