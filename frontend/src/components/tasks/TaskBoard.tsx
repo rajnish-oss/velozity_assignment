@@ -61,7 +61,7 @@ export default function TaskBoard() {
       <FilterBar />
 
       {status === 'loading' ? (
-        <LoadingBlock label="Loading tasksâ€¦" />
+        <LoadingBlock label="Loading tasks..." />
       ) : filtered.length === 0 ? (
         <EmptyState title="No tasks match these filters" description="Try clearing a filter, or create a new task." />
       ) : (
@@ -99,14 +99,14 @@ export default function TaskBoard() {
                           disabled={STATUS_ORDER.indexOf(task.status) === 0}
                           className="text-xs text-ink-400 hover:text-amber-700 disabled:invisible"
                         >
-                          â† Back
+                          Back
                         </button>
                         <button
                           onClick={() => moveTask(task, 1)}
                           disabled={STATUS_ORDER.indexOf(task.status) === STATUS_ORDER.length - 1}
                           className="text-xs text-ink-400 hover:text-amber-700 disabled:invisible"
                         >
-                          Advance â†’
+                          Advance
                         </button>
                       </div>
                     </div>

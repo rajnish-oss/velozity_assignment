@@ -9,6 +9,7 @@ import taskRouter from './src/routes/taskRoutes';
 import activityRouter from './src/routes/activityRoutes';
 import notificationRouter from './src/routes/notificationRoutes';
 import dashboardRouter from './src/routes/dashboardRoutes';
+import userRouter from './src/routes/userRoutes';
 import http  from'http';
 import { Server } from'socket.io';
 import bcrypt from 'bcrypt'
@@ -30,12 +31,7 @@ app.use('/tasks', taskRouter);
 app.use('/activities', activityRouter);
 app.use('/notifications', notificationRouter);
 app.use('/dashboard', dashboardRouter);
-app.post('/seed', async (req, res) => {
-    const { name, password, role, email } = req.body;
-    const passwordHash = await bcrypt.hash(password, 12)
-    const user = await db.orm.public.User.create({ name, passwordHash, role, email });
-    res.json(user);
-});
+app.use('/users', userRouter);
 
 const server = http.createServer(app);
 export const io = new Server(server, {

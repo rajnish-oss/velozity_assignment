@@ -1,18 +1,12 @@
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
+import { Temporal } from '@js-temporal/polyfill';
+import { getAuthenticatedUser } from '../middlerware/authMiddleware';
 
-type UserRole = 'ADMIN' | 'PROJECT_MANAGER' | 'DEVELOPER';
-declare const Temporal: any;
-
-function currentUser(req: Request): { id: string; role: UserRole } | null {
-  const user = req.user as { sub?: unknown; role?: unknown } | undefined;
-  if (typeof user?.sub !== 'string' || (user.role !== 'ADMIN' && user.role !== 'PROJECT_MANAGER' && user.role !== 'DEVELOPER')) return null;
-  return { id: user.sub, role: user.role };
-}
 
 export async function dashboardMetrics(req: Request, res: Response) {
   try {
-    const user = currentUser(req);
+    const user = getAuthenticatedUser(req);
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
     let projects;

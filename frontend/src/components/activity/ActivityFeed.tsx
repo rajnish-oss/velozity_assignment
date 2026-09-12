@@ -1,5 +1,4 @@
 import { useAppSelector } from '../../app/hooks'
-import { USERS } from '../../api/fixtures'
 import Avatar from '../common/Avatar'
 import EmptyState from '../common/EmptyState'
 import { LoadingBlock } from '../common/Spinner'
@@ -32,7 +31,7 @@ function useScopedActivities() {
 export default function ActivityFeed({ compact = false }) {
   const { items, status } = useScopedActivities()
 
-  if (status === 'loading') return <LoadingBlock label="Loading activityâ€¦" />
+  if (status === 'loading') return <LoadingBlock label="Loading activity..." />
 
   if (items.length === 0) {
     return <EmptyState title="No activity yet" description="Updates on tasks and projects will appear here in real time." />
@@ -41,15 +40,13 @@ export default function ActivityFeed({ compact = false }) {
   return (
     <ul className={compact ? 'space-y-1' : 'space-y-1'}>
       {items.map((activity) => {
-        const actor = USERS[activity.userId]
         return (
           <li key={activity.id} className="animate-feed-in flex items-start gap-3 rounded-md px-2 py-2 hover:bg-canvas">
             <Avatar userId={activity.userId} size="sm" />
             <div className="min-w-0 flex-1">
               <p className="text-sm text-ink-800">
-                <span className="font-medium text-ink-900">{actor?.name || 'Someone'}</span> {activity.text}
+                <span className="font-medium text-ink-900">{activity.actorName || 'Someone'}</span> {activity.text} <span className="text-ink-500">- {relativeTime(activity.at)}</span>
               </p>
-              <p className="mt-0.5 text-xs text-ink-500">{relativeTime(activity.at)}</p>
             </div>
           </li>
         )

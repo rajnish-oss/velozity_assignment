@@ -10,7 +10,8 @@ const toClientStatus = (status: string) => status === 'TO_DO' ? 'TODO' : status
 const projectForClient = (project: any) => ({ ...project, title: project.name, scope: project.description ?? '', client: project.client ?? '' })
 const taskForClient = (task: any) => ({ ...task, status: toClientStatus(task.status) })
 const notificationForClient = (notification: any) => ({ ...notification, text: notification.message, read: notification.isRead, at: notification.createdAt })
-const activityForClient = (activity: any) => ({ ...activity, at: activity.createdAt, text: activity.action === 'STATUS_CHANGED' ? `changed a task from ${toClientStatus(activity.oldValue)} to ${toClientStatus(activity.newValue)}` : activity.action })
+const activityForClient = (activity: any) => ({ ...activity, at: activity.createdAt, text: activity.action === 'STATUS_CHANGED' ? `moved Task #${activity.taskId} from ${statusLabel(toClientStatus(activity.oldValue))} → ${statusLabel(toClientStatus(activity.newValue))}` : activity.action })
+const statusLabel = (status: string) => ({ TODO: 'To Do', IN_PROGRESS: 'In Progress', IN_REVIEW: 'In Review', DONE: 'Done' }[status] ?? status)
 
 async function request<T>(path: string, options: ApiOptions = {}): Promise<T> {
   const { body, headers, ...init } = options
@@ -52,6 +53,10 @@ export async function logout() {
 export async function fetchProjects() {
   const { projects } = await request<{ projects: any[] }>('/projects')
   return projects.map(projectForClient)
+}
+export async function fetchUsers() {
+  const { users } = await request<{ users: any[] }>('/users')
+  return users
 }
 export async function createProject(payload: any) {
   const { project } = await request<{ project: any }>('/projects', { method: 'POST', body: { name: payload.title, description: payload.scope } })

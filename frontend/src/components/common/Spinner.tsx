@@ -13,7 +13,7 @@ export default function Spinner({ size = 20, className = '' }) {
   )
 }
 
-export function LoadingBlock({ label = 'Loadingâ€¦' }) {
+export function LoadingBlock({ label = 'Loading...' }) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 text-ink-500">
       <Spinner size={28} />

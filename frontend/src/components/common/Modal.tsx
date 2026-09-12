@@ -22,7 +22,7 @@ export default function Modal({ open, onClose, title, children, footer, width = 
             aria-label="Close dialog"
             className="rounded-md p-1 text-ink-500 hover:bg-canvas hover:text-ink-900"
           >
-            âœ•
+            Close
           </button>
         </div>
         <div className="max-h-[70vh] overflow-y-auto px-5 py-5">{children}</div>

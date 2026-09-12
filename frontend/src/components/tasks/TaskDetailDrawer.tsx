@@ -1,6 +1,5 @@
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { editTask } from '../../features/tasks/tasksSlice'
-import { USERS } from '../../api/fixtures'
 import Avatar from '../common/Avatar'
 import { PriorityBadge, StatusPill, OverdueBadge } from '../common/Badge'
 import { formatDueDate, relativeTime, isOverdue } from '../../utils/time'
@@ -11,12 +10,11 @@ export default function TaskDetailDrawer({ taskId, onClose }) {
   const task = useAppSelector((s) => s.tasks.items.find((t) => t.id === taskId))
   const project = useAppSelector((s) => s.projects.items.find((p) => p.id === task?.projectId))
   const user = useAppSelector((s) => s.auth.user)
+  const assignee = useAppSelector((s) => s.users.items.find((item) => item.id === task?.assigneeId))
 
   if (!taskId || !task) return null
 
   const canEdit = user.role !== ROLES.DEVELOPER || task.assigneeId === user.id
-  const assignee = USERS[task.assigneeId]
-
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
       <button aria-label="Close" onClick={onClose} className="absolute inset-0 bg-ink-900/40 backdrop-blur-[1px]" />
@@ -27,7 +25,7 @@ export default function TaskDetailDrawer({ taskId, onClose }) {
             <h2 className="mt-0.5 text-base font-semibold text-ink-900">{task.title}</h2>
           </div>
           <button onClick={onClose} aria-label="Close drawer" className="rounded-md p-1 text-ink-500 hover:bg-canvas">
-            âœ•
+            Close
           </button>
         </div>
 

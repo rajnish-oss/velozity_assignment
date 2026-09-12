@@ -5,6 +5,7 @@ import tasksReducer from '../features/tasks/tasksSlice'
 import activitiesReducer from '../features/activities/activitiesSlice'
 import notificationsReducer from '../features/notifications/notificationsSlice'
 import presenceReducer from '../features/presence/presenceSlice'
+import usersReducer from '../features/users/usersSlice'
 
 export const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ export const store = configureStore({
     activities: activitiesReducer,
     notifications: notificationsReducer,
     presence: presenceReducer,
+    users: usersReducer,
   },
 })
 

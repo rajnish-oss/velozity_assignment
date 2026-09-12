@@ -25,7 +25,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <MetricCard label="Total projects" value={projects.length} />
-        <MetricCard label="Team members online" value={onlineCount} tone="accent" hint="Updates live via WebSocket" />
+        <MetricCard label="Team members online" value={onlineCount ? onlineCount : '-'} tone="accent" hint="Updates live via WebSocket" />
         <MetricCard label="Overdue tasks" value={overdueCount} tone={overdueCount > 0 ? 'alert' : 'default'} />
       </div>
 

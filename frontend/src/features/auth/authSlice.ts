@@ -20,7 +20,16 @@ export const loginUser = createAsyncThunk('auth/login', async ({ email, password
 
 export const restoreSession = createAsyncThunk('auth/refresh', async (_, { rejectWithValue }) => {
   try {
-    return await api.refreshSession()
+    const res =  await api.refreshSession()
+
+    if(!res){
+      return rejectWithValue("No login response")
+    }
+
+    const accessToken = res.accessToken
+    localStorage.setItem('accessToken',accessToken)
+
+    return res;
   } catch (err) {
     return rejectWithValue(err.message)
   }

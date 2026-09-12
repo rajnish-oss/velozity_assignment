@@ -1,16 +1,13 @@
 import type { Request, Response } from "express";
 import { db } from "../prisma/db";
+import { getAuthenticatedUser, type AuthenticatedUser } from '../middlerware/authMiddleware';
 
-type UserRole = "ADMIN" | "PROJECT_MANAGER" | "DEVELOPER";
-
-function getUser(req: Request): { id: string; role: UserRole } | null {
-  const { sub: id, role } = req.user as any;
-  if (!id || !role) return null;
-  return { id, role };
+function getProjectId(req: Request): string | null {
+  const id = req.params.id;
+  return typeof id === 'string' && id.length > 0 ? id : null;
 }
 
-
-async function getVisibleProject(id: string, user: { id: string; role: UserRole }) {
+async function getVisibleProject(id: string, user: AuthenticatedUser) {
   if (user.role === "ADMIN") {
     return db.orm.public.Project.where({ id }).first();
   }
@@ -24,7 +21,7 @@ async function getVisibleProject(id: string, user: { id: string; role: UserRole 
 
 export async function listProjects(req: Request, res: Response) {
   try {
-    const user = getUser(req);
+    const user = getAuthenticatedUser(req);
     if (!user) return res.status(401).json({ error: "Unauthorized" });
 
     let projects;
@@ -50,15 +47,14 @@ export async function listProjects(req: Request, res: Response) {
 
 export async function createProject(req: Request, res: Response) {
   try {
-    const user = getUser(req);
+    const user = getAuthenticatedUser(req);
     if (!user) return res.status(401).json({ error: "Unauthorized" });
 
-    if (user.role === "DEVELOPER") {
-      return res.status(403).json({ error: "Devs can't create projects" });
+    const { name, description } = req.body as { name?: unknown; description?: unknown };
+    if (typeof name !== 'string' || !name.trim()) return res.status(400).json({ error: "Name is required" });
+    if (description !== undefined && description !== null && typeof description !== 'string') {
+      return res.status(400).json({ error: 'Description must be a string' });
     }
-
-    const { name, description } = req.body;
-    if (!name) return res.status(400).json({ error: "Name is required" });
 
     const project = await db.orm.public.Project.create({
       name: name.trim(),
@@ -74,10 +70,10 @@ export async function createProject(req: Request, res: Response) {
 
 export async function getProject(req: Request, res: Response) {
   try {
-    const user = getUser(req);
+    const user = getAuthenticatedUser(req);
     if (!user) return res.status(401).json({ error: "Unauthorized" });
 
-    const id = req.params.id;
+    const id = getProjectId(req);
     if (!id) return res.status(400).json({ error: "Invalid ID" });
 
     const project = await getVisibleProject(id, user);
@@ -91,24 +87,26 @@ export async function getProject(req: Request, res: Response) {
 
 export async function updateProject(req: Request, res: Response) {
   try {
-    const user = getUser(req);
+    const user = getAuthenticatedUser(req);
     if (!user) return res.status(401).json({ error: "Unauthorized" });
 
-    if (user.role === "DEVELOPER") {
-      return res.status(403).json({ error: "Forbidden" });
-    }
-
-    const id = req.params.id;
+    const id = getProjectId(req);
     if (!id) return res.status(400).json({ error: "Invalid ID" });
 
     const existing = await getVisibleProject(id, user);
     if (!existing) return res.status(404).json({ error: "Not found" });
 
-    const { name, description } = req.body;
-    const data: any = {};
+    const { name, description } = req.body as { name?: unknown; description?: unknown };
+    const data: { name?: string; description?: string | null } = {};
     
-    if (name !== undefined) data.name = name.trim();
-    if (description !== undefined) data.description = description?.trim() || null;
+    if (name !== undefined) {
+      if (typeof name !== 'string' || !name.trim()) return res.status(400).json({ error: 'Name must be a non-empty string' });
+      data.name = name.trim();
+    }
+    if (description !== undefined) {
+      if (description !== null && typeof description !== 'string') return res.status(400).json({ error: 'Description must be a string or null' });
+      data.description = description?.trim() || null;
+    }
 
     const project = await db.orm.public.Project.where({ id: existing.id }).update(data);
     res.json({ project });
@@ -119,14 +117,10 @@ export async function updateProject(req: Request, res: Response) {
 
 export async function deleteProject(req: Request, res: Response) {
   try {
-    const user = getUser(req);
+    const user = getAuthenticatedUser(req);
     if (!user) return res.status(401).json({ error: "Unauthorized" });
 
-    if (user.role === "DEVELOPER") {
-      return res.status(403).json({ error: "Forbidden" });
-    }
-
-    const id = req.params.id;
+    const id = getProjectId(req);
     if (!id) return res.status(400).json({ error: "Invalid ID" });
 
     const existing = await getVisibleProject(id, user);

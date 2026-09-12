@@ -6,6 +6,7 @@ import { loadProjects } from '../../features/projects/projectsSlice'
 import { loadTasks } from '../../features/tasks/tasksSlice'
 import { loadActivities } from '../../features/activities/activitiesSlice'
 import { loadNotifications } from '../../features/notifications/notificationsSlice'
+import { loadUsers } from '../../features/users/usersSlice'
 import Sidebar from './Sidebar'
 import Header from './Header'
 import ErrorBoundary from '../common/ErrorBoundary'
@@ -22,6 +23,7 @@ export default function AppShell() {
     dispatch(loadTasks())
     dispatch(loadActivities())
     dispatch(loadNotifications(user.id))
+    dispatch(loadUsers())
   }, [user, dispatch])
 
   return (

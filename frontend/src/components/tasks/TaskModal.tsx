@@ -1,29 +1,30 @@
 import { useState, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { addTask } from '../../features/tasks/tasksSlice'
-import { USERS } from '../../api/fixtures'
 import Modal from '../common/Modal'
 import { PRIORITY_ORDER } from '../../utils/constants'
 
-const DEV_IDS = Object.values(USERS).filter((u) => u.role === 'DEVELOPER').map((u) => u.id)
+
 
 export default function TaskModal({ open, onClose, defaultProjectId }) {
   const dispatch = useAppDispatch()
   const projects = useAppSelector((s) => s.projects.items)
+  const developers = useAppSelector((s) => s.users.items.filter((user) => user.role === 'DEVELOPER'))
 
   const [title, setTitle] = useState('')
   const [projectId, setProjectId] = useState(defaultProjectId || '')
-  const [assigneeId, setAssigneeId] = useState(DEV_IDS[0])
+  const [assigneeId, setAssigneeId] = useState('')
   const [priority, setPriority] = useState('MEDIUM')
   const [dueDate, setDueDate] = useState('')
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [description,setDescription] = useState('')
 
   useEffect(() => {
     if (open) {
       setTitle('')
       setProjectId(defaultProjectId || projects[0]?.id || '')
-      setAssigneeId(DEV_IDS[0])
+      setAssigneeId(developers[0]?.id || '')
       setPriority('MEDIUM')
       setDueDate('')
       setError('')
@@ -40,16 +41,18 @@ export default function TaskModal({ open, onClose, defaultProjectId }) {
       await dispatch(
         addTask({
           title: title.trim(),
+          description,
           projectId,
-          assigneeId,
+          assigneeId: assigneeId || null,
           priority,
-          status: 'TODO',
           dueDate: new Date(dueDate).toISOString(),
         })
       ).unwrap()
       onClose()
-    } catch {
-      setError('Could not create the task. Try again.')
+    } catch (err) {
+      // Thunks preserve the API error, e.g. a permissions or project-visibility
+      // failure. Showing it makes the form actionable instead of masking it.
+      setError(err instanceof Error ? err.message : 'Could not create the task. Try again.')
     } finally {
       setSubmitting(false)
     }
@@ -71,7 +74,7 @@ export default function TaskModal({ open, onClose, defaultProjectId }) {
             disabled={submitting}
             className="rounded-md bg-amber-500 px-3.5 py-2 text-sm font-semibold text-ink-900 hover:bg-amber-600 disabled:opacity-60"
           >
-            {submitting ? 'Creatingâ€¦' : 'Create task'}
+            {submitting ? 'Creating...' : 'Create task'}
           </button>
         </>
       }
@@ -105,9 +108,10 @@ export default function TaskModal({ open, onClose, defaultProjectId }) {
               onChange={(e) => setAssigneeId(e.target.value)}
               className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-amber-500"
             >
-              {DEV_IDS.map((id) => (
-                <option key={id} value={id}>
-                  {USERS[id].name}
+              <option value="">Unassigned</option>
+              {developers.map((developer) => (
+                <option key={developer.id} value={developer.id}>
+                  {developer.name}
                 </option>
               ))}
             </select>
@@ -124,6 +128,14 @@ export default function TaskModal({ open, onClose, defaultProjectId }) {
                 </option>
               ))}
             </select>
+          </Field>
+          <Field label="Description">
+            <input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Enter task description"
+            className="w-full rounded-md border border-line px-3 py-2 text-sm focus:border-amber-500"
+          />
           </Field>
         </div>
         <Field label="Due date">

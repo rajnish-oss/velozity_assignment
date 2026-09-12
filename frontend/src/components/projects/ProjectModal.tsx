@@ -58,7 +58,7 @@ export default function ProjectModal({ open, onClose, project }) {
             disabled={submitting}
             className="rounded-md bg-amber-500 px-3.5 py-2 text-sm font-semibold text-ink-900 hover:bg-amber-600 disabled:opacity-60"
           >
-            {submitting ? 'Savingâ€¦' : isEdit ? 'Save changes' : 'Create project'}
+            {submitting ? 'Saving...' : isEdit ? 'Save changes' : 'Create project'}
           </button>
         </>
       }

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
 import { removeProject } from './projectsSlice'
-import { USERS } from '../../api/fixtures'
 import ProjectModal from '../../components/projects/ProjectModal'
 import ConfirmDialog from '../../components/common/ConfirmDialog'
 import EmptyState from '../../components/common/EmptyState'
@@ -15,6 +14,7 @@ export default function ProjectList() {
   const user = useAppSelector((s) => s.auth.user)
   const { items, status } = useAppSelector((s) => s.projects)
   const tasks = useAppSelector((s) => s.tasks.items)
+  const users = useAppSelector((s) => s.users.items)
 
   const [modalOpen, setModalOpen] = useState(false)
   const [editingProject, setEditingProject] = useState(null)
@@ -59,7 +59,7 @@ export default function ProjectList() {
       </div>
 
       {status === 'loading' ? (
-        <LoadingBlock label="Loading projectsâ€¦" />
+        <LoadingBlock label="Loading projects..." />
       ) : visible.length === 0 ? (
         <EmptyState
           title="No projects yet"
@@ -78,7 +78,6 @@ export default function ProjectList() {
             <thead className="border-b border-line bg-canvas/60 text-xs uppercase tracking-wide text-ink-500">
               <tr>
                 <th className="px-5 py-3 font-semibold">Project</th>
-                <th className="px-5 py-3 font-semibold">Client</th>
                 <th className="px-5 py-3 font-semibold">Owner</th>
                 <th className="px-5 py-3 font-semibold">Tasks</th>
                 <th className="px-5 py-3 font-semibold">Created</th>
@@ -95,8 +94,8 @@ export default function ProjectList() {
                         {project.title}
                       </Link>
                     </td>
-                    <td className="px-5 py-3.5 text-ink-600">{project.client}</td>
-                    <td className="px-5 py-3.5 text-ink-600">{USERS[project.ownerId]?.name}</td>
+
+                    <td className="px-5 py-3.5 text-ink-600">{users.find((owner) => owner.id === project.ownerId)?.name || 'Unknown'}</td>
                     <td className="px-5 py-3.5 text-ink-600">{taskCount}</td>
                     <td className="px-5 py-3.5 text-ink-500">{relativeTime(project.createdAt)}</td>
                     {canManage && (

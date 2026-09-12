@@ -8,7 +8,7 @@ export default function ProtectedRoute({ children }) {
   if (bootstrapping) {
     return (
       <div className="flex h-screen items-center justify-center bg-canvas">
-        <LoadingBlock label="Restoring your sessionâ€¦" />
+        <LoadingBlock label="Restoring your session..." />
       </div>
     )
   }

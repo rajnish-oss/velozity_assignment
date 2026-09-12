@@ -1,8 +1,9 @@
 import jwt from 'jsonwebtoken'
-import type { Request, Response, NextFunction } from 'express'
+import type { Request, Response } from 'express'
 import bcrypt from 'bcrypt'
 import { db } from '../prisma/db';
 import { Temporal } from '@js-temporal/polyfill';
+import { getAuthenticatedUser } from '../middlerware/authMiddleware';
 
 const jwt_secret = process.env.JWT_SECRET
 const refresh_jwt_secret = process.env.REFRESH_JWT_SECRET
@@ -126,15 +127,14 @@ function readCookie(req: Request, name: string): string | undefined {
 
 export const currentUser = async(req: Request, res: Response) => {
     try{
-        const id = req.user?.sub;
-
-        if (typeof id !== 'string') {
+        const user = getAuthenticatedUser(req);
+        if (!user) {
             return res.status(403).json({ error: 'user not found' });
         }
 
-        const user = await db.orm.public.User.where({ id }).first();
+        const currentUser = await db.orm.public.User.where({ id: user.id }).first();
 
-        return res.status(200).json({ user });
+        return res.status(200).json({ user: currentUser });
     }catch(err){
         return res.status(403).json({ error: 'user not found' });
     }

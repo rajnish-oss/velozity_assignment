@@ -8,6 +8,7 @@ const activitiesSlice = createSlice({
   initialState: { items: [], status: 'idle', error: null },
   reducers: {
     activityReceived(state, action) {
+      if (state.items.some((activity) => activity.id === action.payload.id)) return
       state.items.unshift(action.payload)
       if (state.items.length > 50) state.items.pop()
     },

@@ -54,7 +54,7 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢"
+                placeholder="Enter your password"
                 className="w-full rounded-md border border-line px-3 py-2 text-sm text-ink-900 placeholder:text-ink-400 focus:border-amber-500"
               />
               {passwordError && <p className="mt-1 text-xs text-rose-600">{passwordError}</p>}

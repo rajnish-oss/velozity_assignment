@@ -37,7 +37,7 @@ export default function NotificationDropdown({ open, onClose }) {
         </button>
       </div>
       <div className="max-h-96 overflow-y-auto">
-        {status === 'loading' && <p className="px-4 py-6 text-sm text-ink-500">Loadingâ€¦</p>}
+        {status === 'loading' && <p className="px-4 py-6 text-sm text-ink-500">Loading...</p>}
         {status !== 'loading' && items.length === 0 && (
           <div className="px-4 py-6">
             <EmptyState title="You're all caught up" description="New notifications will show up here." />

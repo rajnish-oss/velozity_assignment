@@ -1,54 +1,61 @@
 import jwt from 'jsonwebtoken';
 import type { Request, Response, NextFunction } from 'express';
-import { db } from '../prisma/db';
+
+export const ROLES = ['ADMIN', 'PROJECT_MANAGER', 'DEVELOPER'] as const;
+export type UserRole = (typeof ROLES)[number];
+export type AuthenticatedUser = { id: string; role: UserRole };
+type AuthenticatedRequestUser = jwt.JwtPayload & { sub: string; role: UserRole };
 
 declare global {
   namespace Express {
     interface Request {
-      user?: jwt.JwtPayload;
+      user?: AuthenticatedRequestUser;
     }
   }
 }
 
-const jwt_secret = process.env.JWT_SECRET
+const jwtSecret = process.env.JWT_SECRET;
 
-if(!jwt_secret) {
+if (!jwtSecret) {
     throw new Error('JWT_SECRET is not defined')
 }
+
+function isUserRole(value: unknown): value is UserRole {
+  return typeof value === 'string' && ROLES.includes(value as UserRole);
+}
+
+export function getAuthenticatedUser(req: Request): AuthenticatedUser | null {
+  const user = req.user;
+  if (!user || typeof user.sub !== 'string' || !isUserRole(user.role)) return null;
+  return { id: user.sub, role: user.role };
+}
+
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-     const authHeader = req.headers['authorization'];
-     const token = authHeader && authHeader.split(' ')[1];
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
 
      if (!token) {
         return res.status(401).json({ message: 'Token missing' });
     }
 
-    jwt.verify(token, jwt_secret, (err, decoded) => {
+    jwt.verify(token, jwtSecret, (err, decoded) => {
     if (err || !decoded || typeof decoded === 'string') {
         return res.status(403).json({ message: 'Invalid or expired token' });
     }
 
-    req.user = decoded;
+    if (typeof decoded.sub !== 'string' || !isUserRole(decoded.role)) {
+        return res.status(403).json({ message: 'Invalid or expired token' });
+    }
+
+    req.user = { ...decoded, sub: decoded.sub, role: decoded.role };
     next();
     });
 }
 
-export const autherizationCheck = (req: Request, res: Response, next: NextFunction, role: string[]) => {
-    const id = req.user?.sub;
-
-    if(typeof id !== 'string') {
-        return res.status(403).json({ error: 'user not found' });
+export const requireRoles = (...roles: UserRole[]) => (req: Request, res: Response, next: NextFunction) => {
+    const user = getAuthenticatedUser(req);
+    if (!user || !roles.includes(user.role)) {
+        return res.status(403).json({ error: 'Forbidden' });
     }
-
-    db.orm.public.User.findUnique({
-        where: { id }
-    }).then(user => {
-        if(user && role.includes(user.role)) {
-            next();
-        }else{
-            return res.status(403).json({ error: 'unauthorized' });
-        }
-    }).catch(err => {
-        return res.status(403).json({ error: 'user not found' });
-    })
+    next();
 }

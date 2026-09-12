@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../app/hooks'
-import { USERS } from '../../api/fixtures'
 import { StatusPill, PriorityBadge, OverdueBadge } from '../../components/common/Badge'
 import EmptyState from '../../components/common/EmptyState'
 import ProjectModal from '../../components/projects/ProjectModal'
@@ -19,6 +18,7 @@ export default function ProjectDetails() {
   const user = useAppSelector((s) => s.auth.user)
   const project = useAppSelector((s) => s.projects.items.find((p) => p.id === id))
   const tasks = useAppSelector((s) => s.tasks.items.filter((t) => t.projectId === id))
+  const users = useAppSelector((s) => s.users.items)
 
   const [editOpen, setEditOpen] = useState(false)
   const [taskModalOpen, setTaskModalOpen] = useState(false)
@@ -53,13 +53,13 @@ export default function ProjectDetails() {
     <div className="space-y-6">
       <div>
         <Link to="/projects" className="text-xs font-medium text-ink-500 hover:text-amber-700">
-          â† Back to projects
+          Back to projects
         </Link>
         <div className="mt-2 flex items-start justify-between gap-4">
           <div>
             <h1 className="text-xl font-semibold text-ink-900">{project.title}</h1>
             <p className="mt-1 text-sm text-ink-500">
-              {project.client} Â· Owned by {USERS[project.ownerId]?.name} Â· Created {relativeTime(project.createdAt)}
+              {project.client} - Owned by {users.find((owner) => owner.id === project.ownerId)?.name || 'Unknown'} - Created {relativeTime(project.createdAt)}
             </p>
           </div>
           {canManage && (
@@ -110,7 +110,7 @@ export default function ProjectDetails() {
                   <button onClick={() => setActiveTaskId(task.id)} className="flex w-full items-center gap-4 px-5 py-3.5 text-left hover:bg-canvas/50">
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-ink-900">{task.title}</p>
-                      <p className="mt-0.5 text-xs text-ink-500">Assigned to {USERS[task.assigneeId]?.name}</p>
+                      <p className="mt-0.5 text-xs text-ink-500">Assigned to {users.find((assignee) => assignee.id === task.assigneeId)?.name || 'Unassigned'}</p>
                     </div>
                     <PriorityBadge priority={task.priority} />
                     <StatusPill status={task.status} />

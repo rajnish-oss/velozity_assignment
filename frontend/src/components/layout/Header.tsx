@@ -33,7 +33,7 @@ export default function Header() {
         </span>
         <span
           className="hidden items-center gap-1.5 text-xs text-ink-500 sm:flex"
-          title={connectionStatus === 'open' ? 'Live updates connected' : 'Connectingâ€¦'}
+          title={connectionStatus === 'open' ? 'Live updates connected' : 'Connecting...'}
         >
           <span className={clsx('h-1.5 w-1.5 rounded-full', connectionStatus === 'open' ? 'bg-emerald-500' : 'bg-stone-300')} />
           {connectionStatus === 'open' ? 'Live' : 'Connecting'}

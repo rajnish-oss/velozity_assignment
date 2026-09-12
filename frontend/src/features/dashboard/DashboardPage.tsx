@@ -11,7 +11,7 @@ export default function DashboardPage() {
   const tasksStatus = useAppSelector((s) => s.tasks.status)
 
   if (projectsStatus === 'loading' || tasksStatus === 'loading') {
-    return <LoadingBlock label="Loading your dashboardâ€¦" />
+    return <LoadingBlock label="Loading your dashboard..." />
   }
 
   if (user.role === ROLES.ADMIN) return <AdminDashboard />

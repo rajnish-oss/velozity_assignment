@@ -1,7 +1,10 @@
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
+import { enrichActivities } from './activityController';
+import { emitTaskStatusChanged } from '../sockets/socket';
+import { Temporal } from '@js-temporal/polyfill';
+import { getAuthenticatedUser, type AuthenticatedUser, type UserRole } from '../middlerware/authMiddleware';
 
-type UserRole = 'ADMIN' | 'PROJECT_MANAGER' | 'DEVELOPER';
 type TaskStatus = 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE';
 type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
@@ -19,37 +22,6 @@ const TASK_PRIORITIES: TaskPriority[] = [
   'CRITICAL',
 ];
 
-declare const Temporal: any;
-
-type AuthenticatedUser = {
-  id: string;
-  role: UserRole;
-};
-
-function getCurrentUser(req: Request): AuthenticatedUser | null {
-  const user = req.user as
-    | { sub?: unknown; role?: unknown }
-    | undefined;
-
-  const id = user?.sub;
-  const role = user?.role;
-
-  const validRoles: UserRole[] = [
-    'ADMIN',
-    'PROJECT_MANAGER',
-    'DEVELOPER',
-  ];
-
-  if (typeof id !== 'string' || !validRoles.includes(role as UserRole)) {
-    return null;
-  }
-
-  return {
-    id,
-    role: role as UserRole,
-  };
-}
-
 
 function getTaskId(req: Request): string | null {
   const id = req.params.id;
@@ -58,7 +30,7 @@ function getTaskId(req: Request): string | null {
 }
 
 
-function parseInstant(value: unknown): any | null {
+function parseInstant(value: unknown): Temporal.Instant | null {
   if (typeof value !== 'string' || !value.trim()) {
     return null;
   }
@@ -72,7 +44,7 @@ function parseInstant(value: unknown): any | null {
 
 function parseDueDateRange(
   value: unknown,
-): { from: any; to: any } | null {
+): { from: Temporal.Instant; to: Temporal.Instant } | null {
   if (typeof value !== 'string') {
     return null;
   }
@@ -132,7 +104,7 @@ async function findVisibleTask(
 
 export async function listTasks(req: Request, res: Response) {
   try {
-    const user = getCurrentUser(req);
+    const user = getAuthenticatedUser(req);
 
     if (!user) {
       return res.status(401).json({
@@ -244,7 +216,7 @@ export async function listTasks(req: Request, res: Response) {
 
 export async function createTask(req: Request, res: Response) {
   try {
-    const user = getCurrentUser(req);
+    const user = getAuthenticatedUser(req);
 
     if (!user) {
       return res.status(401).json({
@@ -252,11 +224,7 @@ export async function createTask(req: Request, res: Response) {
       });
     }
 
-    if (user.role === 'DEVELOPER') {
-      return res.status(403).json({
-        error: 'Only admins and project managers can create tasks',
-      });
-    }
+    console.log(user)
 
     const {
       title,
@@ -333,6 +301,15 @@ export async function createTask(req: Request, res: Response) {
       });
     }
 
+    if (assigneeId) {
+      const assignee = await db.orm.public.User
+        .where({ id: assigneeId, role: 'DEVELOPER' })
+        .first();
+      if (!assignee) {
+        return res.status(400).json({ error: 'assigneeId must belong to a developer' });
+      }
+    }
+
     const task = await db.orm.public.Task.create({
       title: title.trim(),
       description: description?.trim() || null,
@@ -345,7 +322,8 @@ export async function createTask(req: Request, res: Response) {
     return res.status(201).json({
       task,
     });
-  } catch {
+  } catch (error) {
+    console.error('Unable to create task:', error);
     return res.status(500).json({
       error: 'Unable to create task',
     });
@@ -354,7 +332,7 @@ export async function createTask(req: Request, res: Response) {
 
 export async function getTask(req: Request, res: Response) {
   try {
-    const user = getCurrentUser(req);
+    const user = getAuthenticatedUser(req);
     const taskId = getTaskId(req);
 
     if (!user) {
@@ -392,7 +370,7 @@ export async function updateTaskStatus(
   res: Response,
 ) {
   try {
-    const user = getCurrentUser(req);
+    const user = getAuthenticatedUser(req);
     const taskId = getTaskId(req);
 
     if (!user) {
@@ -433,13 +411,15 @@ export async function updateTaskStatus(
       });
 
     if (existingTask.status !== status) {
-      await db.orm.public.ActivityLog.create({
+      const storedActivity = await db.orm.public.ActivityLog.create({
         taskId: existingTask.id,
         userId: user.id,
         action: 'STATUS_CHANGED',
         oldValue: existingTask.status,
         newValue: status,
       });
+      const [activity] = await enrichActivities([storedActivity]);
+      if (task && activity) emitTaskStatusChanged(task, activity);
     }
 
     return res.status(200).json({
@@ -455,19 +435,12 @@ export async function updateTaskStatus(
 
 export async function deleteTask(req: Request, res: Response) {
   try {
-    const user = getCurrentUser(req);
+    const user = getAuthenticatedUser(req);
     const taskId = getTaskId(req);
 
     if (!user) {
       return res.status(401).json({
         error: 'Unauthorized',
-      });
-    }
-
-    // Developers cannot delete tasks.
-    if (user.role === 'DEVELOPER') {
-      return res.status(403).json({
-        error: 'Only admins and project managers can delete tasks',
       });
     }
 
@@ -496,4 +469,3 @@ export async function deleteTask(req: Request, res: Response) {
     });
   }
 }
-

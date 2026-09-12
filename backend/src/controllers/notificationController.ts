@@ -1,9 +1,9 @@
 import type { Request, Response } from 'express';
 import { db } from '../prisma/db';
+import { getAuthenticatedUser } from '../middlerware/authMiddleware';
 
 function currentUserId(req: Request): string | null {
-  const user = req.user as { sub?: unknown } | undefined;
-  return typeof user?.sub === 'string' ? user.sub : null;
+  return getAuthenticatedUser(req)?.id ?? null;
 }
 
 export async function listNotifications(req: Request, res: Response) {
