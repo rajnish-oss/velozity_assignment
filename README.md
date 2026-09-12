@@ -47,6 +47,8 @@ npx tsx src/prisma/seed.ts
 npm run dev
 ```
 
+For a non-watch start, use `npm start`. The backend uses `tsx` so its TypeScript ESM imports resolve correctly without requiring manual `.js` extensions in source files.
+
 The seed is destructive: it clears existing application rows before inserting demo data.
 
 Demo login after seeding:

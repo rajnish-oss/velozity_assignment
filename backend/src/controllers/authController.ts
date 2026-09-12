@@ -122,7 +122,7 @@ export const logout = async (req: Request, res: Response) => {
 function readCookie(req: Request, name: string): string | undefined {
     const cookie = req.headers.cookie;
     if (!cookie) return undefined;
-    return cookie.split(';').map((part) => part.trim()).find((part) => part.startsWith(`${name}=`))?.slice(name.length + 1);
+    return cookie.split(';').map((part:string) => part.trim()).find((part) => part.startsWith(`${name}=`))?.slice(name.length + 1);
 }
 
 export const currentUser = async(req: Request, res: Response) => {

@@ -38,7 +38,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         return res.status(401).json({ message: 'Token missing' });
     }
 
-    jwt.verify(token, jwtSecret, (err, decoded) => {
+    jwt.verify(token, jwtSecret, (err:jwt.VerifyErrors | null, decoded:string | jwt.JwtPayload | undefined) => {
     if (err || !decoded || typeof decoded === 'string') {
         return res.status(403).json({ message: 'Invalid or expired token' });
     }
