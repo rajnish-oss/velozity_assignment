@@ -4,7 +4,7 @@ import { Temporal } from '@js-temporal/polyfill';
 import bcrypt from 'bcrypt';
 import { db } from './db';
 
-type TaskStatus = 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE';
+type TaskStatus = 'TO_DO' | 'IN_PROGRESS' | 'IN_REVIEW' | 'DONE' | 'OVERDUE';
 type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 
 async function main() {

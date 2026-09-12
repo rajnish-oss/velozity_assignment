@@ -1,5 +1,3 @@
-// use prisma-next
-
 enum Role {
   ADMIN
   PROJECT_MANAGER
@@ -22,18 +20,18 @@ enum TaskPriority {
 }
 
 model User {
-  id            String         @id @default(uuid())
-  email         String         @unique
-  passwordHash  String
-  name          String
-  role          Role           @default(DEVELOPER)
-  sessions      RefreshToken[]
-  createdAt     DateTime       @default(now())
+  id           String         @id @default(uuid())
+  email        String         @unique
+  passwordHash String
+  name         String
+  role         Role           @default(DEVELOPER)
+  sessions     RefreshToken[]
+  createdAt    DateTime       @default(now())
 
-  ownedProjects   Project[]      @relation("ProjectOwner")
-  assignedTasks   Task[]         @relation("TaskAssignee")
-  activityLogs    ActivityLog[]
-  notifications   Notification[]
+  projects      Project[]
+  assignedTasks Task[]
+  activityLogs  ActivityLog[]
+  notifications Notification[]
 }
 
 model Project {
@@ -41,7 +39,7 @@ model Project {
   name        String
   description String?
   ownerId     String
-  owner       User     @relation("ProjectOwner", fields: [ownerId], references: [id])
+  owner       User     @relation(fields: [ownerId], references: [id])
   createdAt   DateTime @default(now())
   tasks       Task[]
 
@@ -49,16 +47,16 @@ model Project {
 }
 
 model Task {
-  id          String       @id @default(uuid())
+  id          String        @id @default(uuid())
   title       String
   description String?
-  status      TaskStatus   @default(TO_DO)
-  priority    TaskPriority @default(MEDIUM)
+  status      TaskStatus    @default(TO_DO)
+  priority    TaskPriority  @default(MEDIUM)
   dueDate     DateTime
   projectId   String
   assigneeId  String?
-  project     Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee    User?        @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  project     Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee    User?         @relation(fields: [assigneeId], references: [id])
   activity    ActivityLog[]
 
   @@index([projectId])
@@ -71,7 +69,7 @@ model ActivityLog {
   id        String   @id @default(uuid())
   taskId    String
   userId    String
-  action    String 
+  action    String
   oldValue  String?
   newValue  String?
   createdAt DateTime @default(now())
