@@ -7,24 +7,18 @@ A role-based project and task management application built with React, Express, 
 ### Prerequisites
 
 - Node.js 20 or newer
-- Docker Desktop with Compose support
+- PostgreSQL 15 or newer
 - Git
 
-### 1. Start PostgreSQL with Docker
+### 1. Configure PostgreSQL
 
-From the repository root:
-
-```bash
-docker compose up -d postgres
-```
-
-The application expects PostgreSQL on port `5432` with these default local credentials:
+Create a local PostgreSQL database named `velozity`, then use its connection string in `backend/.env`:
 
 ```text
 DATABASE_URL=postgresql://postgres:postgres@localhost:5432/velozity
 ```
 
-If you already have PostgreSQL running, use any equivalent connection string instead.
+If PostgreSQL is running on another host or port, use the corresponding connection string instead.
 
 ### 2. Configure the backend
 
@@ -87,18 +81,6 @@ The frontend uses `VITE_API_BASE_URL`. For local development, create `frontend/.
 
 ```env
 VITE_API_BASE_URL=http://localhost:8000
-```
-
-### Stop PostgreSQL
-
-```bash
-docker compose down
-```
-
-To also remove the local database volume:
-
-```bash
-docker compose down -v
 ```
 
 ## Database Design
@@ -204,7 +186,7 @@ Controllers use the generated Prisma ORM contract rather than embedding raw SQL.
 - Notifications are persisted and exposed through REST, but the current backend does not yet emit every notification type through Socket.IO.
 - There is no background job queue, scheduled refresh-token cleanup, email delivery, or push-notification service.
 - There are no automated backend integration tests in the repository yet.
-- Local development requires PostgreSQL; Docker Compose is provided as the preferred way to run it.
+- Local development requires a running PostgreSQL instance.
 - The application does not include production deployment manifests, TLS termination, rate limiting, or centralized observability.
 
 ## Project Layout
